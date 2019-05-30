@@ -28,16 +28,16 @@ public class StreamCase_4 {
         //查找流中最大/小值
         Comparator<Dish> dishCaloriesComparator = Comparator.comparing(Dish::getCalories);
         Optional<Dish> mostCaloriesdish = menu.stream().collect(maxBy(dishCaloriesComparator));
-        Optional<Dish> leastCaloriesdish = menu.stream().collect(Collectors.minBy(dishCaloriesComparator));
+        Optional<Dish> leastCaloriesdish = menu.stream().collect(minBy(dishCaloriesComparator));
 
         //求菜单总热量
-        int totalCalories = menu.stream().collect(Collectors.summingInt(Dish::getCalories));
+        int totalCalories = menu.stream().collect(summingInt(Dish::getCalories));
 
         //求菜单平均热量
-        double avageCalories = menu.stream().collect(Collectors.averagingInt(Dish::getCalories));
+        double avageCalories = menu.stream().collect(averagingInt(Dish::getCalories));
 
         //通过一次操作求平均、最大、最小和总和
-        DoubleSummaryStatistics menuStatistics = menu.stream().collect(Collectors.summarizingDouble(Dish::getCalories));
+        DoubleSummaryStatistics menuStatistics = menu.stream().collect(summarizingDouble(Dish::getCalories));
         menuStatistics.getAverage();
 
         //连接字符串
@@ -48,11 +48,14 @@ public class StreamCase_4 {
         menu.stream().collect(Collectors.reducing((d1,d2) -> d1.getCalories() < d2.getCalories() ? d1 : d2));
 
 
+        /**
+         * 分组
+         */
         //根据菜类分组
-        Map<Dish.Type, List<Dish>> dishesByType = menu.stream().collect(Collectors.groupingBy(Dish::getType));
+        Map<Dish.Type, List<Dish>> dishesByType = menu.stream().collect(groupingBy(Dish::getType));
 
         //根据热量高低分组
-        Map<CaloricLevel, List<Dish>> dishesByCalories = menu.stream().collect(Collectors.groupingBy(dish -> {
+        Map<CaloricLevel, List<Dish>> dishesByCalories = menu.stream().collect(groupingBy(dish -> {
             if (dish.getCalories() < 300) return CaloricLevel.DIET;
             else if (dish.getCalories() < 700) return CaloricLevel.NORMAL;
             else return CaloricLevel.FAT;
@@ -61,8 +64,8 @@ public class StreamCase_4 {
         //多级分组
         //通过collectingAndThen()将收集器结果转换为另一种类型
         Map<Dish.Type, Dish> mostCaloricByType = menu.stream()
-                .collect(Collectors.groupingBy(Dish::getType, Collectors.collectingAndThen(
-                        Collectors.maxBy(Comparator.comparing(Dish::getCalories)), Optional::get)   //设置每个组数据的类型
+                .collect(groupingBy(Dish::getType,
+                        collectingAndThen(maxBy(Comparator.comparing(Dish::getCalories)), Optional::get)   //设置每个组数据的类型
         ));
 
         Map<Dish.Type, Set<CaloricLevel>> caloricLevelByType = menu.stream()
@@ -87,10 +90,6 @@ public class StreamCase_4 {
                 partitioningBy(Dish::isVegetarian, collectingAndThen(
                         maxBy(Comparator.comparingDouble(Dish::getCalories)), Optional::get)
                 ));
-
-
-
-
 
     }
 }

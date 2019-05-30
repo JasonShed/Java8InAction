@@ -80,7 +80,7 @@ public class StreamCase_2 {
                 .max();
         System.out.println(value3.getAsDouble());
 
-        //原始流转换成一般流
+        //boxed():原始流转换成一般流
         DoubleStream doubleStream = transactions.stream().mapToDouble(Transaction::getValue);
         Stream<Double> stream = doubleStream.boxed();
 
